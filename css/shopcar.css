@@ -1,0 +1,15 @@
+#box1{
+    border: 2px solid black;
+    width: 300px;
+    height: 150px;
+    background-image: url(../static/风铃.jpg);
+    background-size: cover;
+    opacity: 1;
+}
+#box2{
+    border: 2px solid salmon;
+    width: 50px;
+    height: 50px;
+    opacity: 1;
+
+}

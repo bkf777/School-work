@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title t="localTrainingService"></title>
+    <link rel="stylesheet" href="themes/default/style.min.css" />
+    <!--[if IE 9]>
+    <link rel="stylesheet" href="ie9-style.css">
+    <![endif]-->
+    <style>
+        /*body {overflow: hidden;}*/
+        .introjs-helperNumberLayer {
+            opacity: 0 !important;
+        }
+
+        .nor-top_space {
+            margin-top: 16px;
+        }
+
+        #train-log-dialog {
+            width: 80%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            max-height: 60%;
+            background: #FFF !important;
+            border-radius: 6px;
+        }
+
+        #train-log-dialog .modal-dialog {
+            max-width: 200000px !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #train-log-dialog .modal-content {
+            border: none;
+            height: 100%;
+        }
+
+        #train-log-dialog .modal-body {
+            height: calc(100% - 200px);
+        }
+
+        .modal-body-codebox {
+            height: 100%;
+            overflow: auto;
+        }
+
+        #train-log-dialog ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #train-log-dialog ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        #train-log-dialog ::-webkit-scrollbar-thumb {
+            border-radius: 8px;
+            background: #ddd;
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+        }
+
+        #train-log-dialog ::-webkit-scrollbar-thumb:hover {
+            background: #ccc;
+        }
+
+        #train-log-dialog ::-webkit-scrollbar-thumb:active {
+            background: #999;
+        }
+
+        #train-log-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: Menlo, Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif !important;
+        }
+
+        #offlineActivationInstructions img {
+            text-align: center;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+    <script>
+        var modernBrowser = 'fetch' in window && 'assign' in Object;
+
+        if (!modernBrowser) {
+            var scriptElement = document.createElement('script');
+
+            scriptElement.async = false;
+            scriptElement.src = '/polyfills.js';
+            document.head.appendChild(scriptElement);
+        }
+    </script>
+</head>
+
+<body>
+    <div id="logo-container">
+        <!-- logo start -->
+        <div class="logo wrap" id="logo_box"><a href="/"><img src="./icon/logo.png" alt="aiXcoder"
+                    style="width: 350px;"></a></div>
+        <!-- logo end -->
+        <!-- 标题 start -->
+        <h1 t="localTrainingService" class="text-center" id="home-title">
+        </h1>
+    </div>
+    <!-- 标题 end -->
+
+    <!-- 训练页面 start -->
+    <div id="main-container" class="container-fluid row" style="display: none;">
+        <div class="col-md-10 col-md-offset-1 main_section_train ie9-box-center">
+            <div id="idleTrainContainer" style="display: none;"><input id="idleTrain" type="checkbox"><label for=""
+                    t="idleTrain"></label></div><br>
+            <span id="license-to"></span>
+            <a id="extend-license-link" href="javascript:;" t="extendLicense..."></a>
+            <a href="javascript:;" id="btnShowHelpLayer" x-title="showGuide"></a>
+            <div class="card" id="table_h-train">
+                <div class="card-header" t="localModelList"></div>
+                <div class="card-block">
+                    <div id="licensed-to"></div>
+                    <div class="checkbox" style="padding-left: 20px; display: none;">
+                        <input id="auto-reload" type="checkbox">
+                        <label for="auto-reload" t="autoReload"></label>
+                        <span id="load-status"></span>
+                    </div>
+                    <table id="model-table" class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th class="text-center" t="project"></th>
+                                <th class="text-center" t="directory"></th>
+                                <th class="text-center" t="dataProjectDir"></th>
+                                <th class="text-center" t="date" style="min-width: 100px"></th>
+                                <th class="text-center" t="status" style="min-width: 100px"></th>
+                                <th class="text-center" t="language" style="min-width: 100px"></th>
+                                <th style="min-width: 100px"></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="model-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="section_createtrain_btn">
+                <a href="javascript:;" id="createNewTrain" t="trainNewModel" style="text-decoration: underline;"></a>
+                <a href="javascript:;" id="importEnterpriseModel" t="importEnterpriseModel"
+                    style="text-decoration: underline; display: none;"></a>
+            </div>
+
+
+        </div>
+    </div>
+    <!-- 训练页面 end -->
+
+    <!-- 未授权页面 start -->
+    <div id="error-container" style="overflow-x: hidden;overflow-y: auto;box-sizing: border-box;padding-bottom: 20px;">
+        <h2 t="localTrainingService" class="text-center"></h2>
+        <!-- 功能描述 start -->
+        <div t="trainingIntroduction" class="text-center fun_desc"></div>
+        <!-- 功能描述 end -->
+        <!-- 错误信息 start -->
+        <div id="error-msg" class="text-center text-danger"></div>
+        <!-- 错误信息 end -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1" style="margin: auto;">
+                    <div class="tab-headbox">
+                        <a class="tab-headbtn active" href="javascript:;" id="btn_tab1" t="dontHaveActivationCode"></a>
+                        <a class="tab-headbtn" href="javascript:;" id="btn_tab2" t="doHaveActivationCode"></a>
+                    </div>
+                    <div class="activation-box">
+                        <div class="btns" id="tab_content1">
+                            <button id="start-trial" t="startTrial" style="margin-top: 25px;"></button>
+                            <a id="extend-license-btn" class="btn-theme_primary" target="_blank"
+                                t="purchaseLicense"></a>
+                        </div>
+                        <div id="tab_content2">
+                            <div class="form-inline" style="justify-content: space-between;">
+                                <input id="activation-username" type="text" x-placeholder="enterUsername"
+                                    class="form-control">
+                                <input id="activation-code" type="text" x-placeholder="enterActivationCode"
+                                    class="form-control">
+                                <button id="btn-activate" t="activate"></button>
+                            </div>
+
+                            <a id="forget-code-link" target="_blank" x-href="sendEmailUrl" t="forgetCode"
+                                style="text-decoration: underline;"></a>
+                        </div>
+                    </div>
+                    <a id="login-link" target="_blank" x-href="sendEmailUrl" t="loginOrderList"
+                        style="text-decoration: underline;"></a>
+                    <p style="display: none;margin-top: 20px;" id="gotoTrainPage"><a href="javascript:;"
+                            class="btn-theme_primary" t="back"></a></p>
+                    <div id="agreement-box" class="checkbox">
+                        <input id="agree-check" type="checkbox">
+                        <label for="agree-check" t="readAndAgreeAgreement"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 未授权页面 end -->
+
+    <div id="checking-container" style="display: block;" class="text-center">
+        <span t="checkingLicense"></span>
+    </div>
+
+    <div id="purchase-dialog" class="alert-ui1">
+        <div class="alert-ui-content">
+            <div class="alert-ui-header">
+                <span class="alert-ui-title"></span>
+                <a href="javascript:;" class="alert-ui-close alert-ui-fn_close1"></a>
+            </div>
+            <div class="alert-ui-main">
+                <span id="purchaseLink" t="purchaseLink"></span>
+                <span t="afterFinish"></span>
+                <span id="offlineActivationInstructions"></span>
+            </div>
+            <div class="alert-ui-footer">
+                <button id="purchase-dialog-done" t="done" class="alert-ui-btn alert-ui-btn_primary"
+                    style="padding-left: 20px;padding-right: 20px;min-width: 72px;margin-right: 8px;"></button>
+                <button id="purchase-dialog-offline-purchase" t="offlinePurchase" class="btn-theme_default"
+                    style="min-width: 72px;margin-right: 8px;"></button>
+                <button id="purchase-dialog-cancel" t="cancel" class="btn-theme_default"
+                    style="min-width: 72px;"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editDialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle" t="editTitle"></h5>
+                    <span aria-hidden="true" class="close" data-dismiss="modal" aria-label="Close"><i
+                            class="fas fa-times"></i></span>
+                </div>
+                <div class="modal-body">
+                    <div class="card-block">
+                        <div class="nor-top_space">
+                            <label for="edit-project" t="project" class="tit_name ie9-float-left"
+                                x-title="editProjectNameTooltip"></label>
+                            <input id="edit-project" type="text" class="form-control ie9-float-right">
+                        </div>
+                        <div class="nor-top_space">
+                            <label for="edit-project-directory" t="directory" class="tit_name ie9-float-left"
+                                x-title="editDirectoryTooltip"></label>
+                            <input id="edit-project-directory" type="text" class="form-control ie9-float-right">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-theme_primary" id="btn-edit-dialog-done" t="save"></button>
+                    <button type="button" class="btn-theme_default" data-dismiss="modal" id="btn-edit-dialog-cancel"
+                        t="cancel"></button>
+                    <button type="button" class="btn-theme_danger" id="btn-edit-dialog-delete" t="delete"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sharemodel-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="shareModelDialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle" t="shareModel"></h5>
+                    <span aria-hidden="true" class="close" data-dismiss="modal" aria-label="Close"><i
+                            class="fas fa-times"></i></span>
+                </div>
+                <div class="modal-body">
+                    <div class="card-block">
+                        <div class="nor-top_space">
+                            <label for="sharemodel-name" t="name:" class="tit_name ie9-float-left"
+                                x-title="sharemodelNameTooltip"></label>
+                            <input id="sharemodel-name" type="text" class="form-control ie9-float-right">
+                        </div>
+                        <div class="nor-top_space">
+                            <label for="sharemodel-remark" t="remark:" class="tit_name ie9-float-left"
+                                x-title="sharemodelRemarkTooltip"></label>
+                            <input id="sharemodel-remark" type="text" class="form-control ie9-float-right">
+                        </div>
+                        <div class="nor-top_space">
+                            <label for="sharemodel-groupid" t="group:" class="tit_name ie9-float-left"
+                                x-title="sharemodelGroupTooltip"></label>
+                            <select id="sharemodel-groupid" class="ie9-float-right"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span id="share-model-status"></span>
+                    <button type="button" class="btn-theme_primary" id="btn-sharemodel-dialog-done" t="upload"></button>
+                    <button type="button" class="btn-theme_default" data-dismiss="modal"
+                        id="btn-sharemodel-dialog-cancel" t="cancel"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="train-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trainDialog"
+        aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="train-dialog-header" t="trainNewModel"></h5>
+                    <span aria-hidden="true" class="close" data-dismiss="modal" aria-label="Close"><i
+                            class="fas fa-times"></i></span>
+                </div>
+                <div class="modal-body">
+                    <div class="card-block" id="train_card">
+                        <!-- 项目名称 start -->
+                        <div class="nor-top_space">
+                            <label for="new-project-name" id="txt_new-project-name" t="newProjectName"
+                                x-title="trainProjectNameTooltip"><br></label>
+                            <label for="new-project-name" id="txt_new-project-name1" t="newProjectName2"
+                                x-title="trainProjectNameTooltip" style="display: none;"><br></label>
+                            <input id="new-project-name" type="text" class="form-control">
+                        </div>
+                        <!-- 项目名称 end -->
+                        <!-- 项目目录 start -->
+                        <div class="p-rel nor-top_space">
+                            <label for="new-project-dir" t="newProjectDir" id="txt_new-project-dir"
+                                x-title="trainProjectDirTooltip"></label>
+                            <label for="new-project-dir" t="newProjectDir2" id="txt_new-project-dir1"
+                                x-title="trainProjectDirTooltip" style="display: none;"></label>
+                            <div id="selectProjectDir-form" class="ie9-clearfix" style="display: flex;">
+                                <input id="new-project-dir" type="text"
+                                    class="form-control ie9-browser_ipt ie9-float-left">
+                                <a href="javascript:;" class="btn-theme_default ie9-float-right ie9-special-btn"
+                                    id="selectLocalFolder" t="browse"></a>
+                            </div>
+                        </div>
+                        <!-- 项目目录 end -->
+                        <!-- 数据目录 start -->
+                        <div class="nor-top_space" id="data-project-dir-form">
+                            <label for="data-project-dir" t="dataProjectDir1" id="txt_data-project-dir"
+                                x-title="dataProjectDirTooltip" class="nor-top_space"></label>
+                            <label for="data-project-dir" t="dataProjectDir2" id="txt_data-project-dir1"
+                                x-title="dataProjectDirTooltip" class="nor-top_space" style="display: none;"></label>
+                            <div style="display: flex;">
+                                <input id="data-project-dir" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <!-- 数据目录 end -->
+                        <!-- 项目语言 start -->
+                        <div class="nor-top_space" id="langauge-form">
+                            <label for="new-project-language" t="newProjectLanguage"
+                                x-title="trainProjectLanguageTooltip"></label>
+                            <!-- 语言展示区 start -->
+                            <div class="nor-top_space">
+                                <span id="guessProjectLanguageStatusWarning" style="display: none;"
+                                    t="guessProjectLanguageStatusWarning"></span>
+                                <span id="guessProjectLanguageStatus"></span>
+                                <!-- 目录不存在警告 start -->
+                                <span id="guessProjectLanguageMsg"></span>
+                                <!-- 目录不存在警告 end -->
+                            </div>
+                            <!-- 语言展示区 end -->
+                            <select id="new-project-language" class="form-control">
+                            </select>
+                        </div>
+                        <!-- 项目语言 end -->
+                        <!-- 项目模型 start -->
+                        <div class="nor-top_space" id="model-form">
+                            <label for="new-project-model" t="newProjectModel"
+                                x-title="trainProjectModelTooltip"></label>
+                            <select id="new-project-model" class="form-control">
+                            </select>
+                        </div>
+                        <!-- 项目模型 end -->
+                        <!-- 文件选择区 start -->
+                        <div class="nor-top_space" id="select-file-form">
+                            <span t="newSelectFile"></span>
+                            <button id="new-project-train" t="selectTrainingFiles" class="btn-theme_primary"
+                                style="margin-left: 20px;"></button>
+                        </div>
+                        <!-- 文件选择区 end -->
+                        <!-- 已选择的代码文件 start -->
+                        <div class="nor-top_space" id="boxSelectFileDescription" style="display: none;">
+                            <span t="selectFileDescription"></span>
+                            <span id="selectFileInfo"></span>
+                        </div>
+                        <!-- 已选择的代码文件 end -->
+                        <!-- 训练方式 start -->
+                        <div class="nor-top_space" id="train-type-form">
+                            <span t="chooseTrainType"></span>
+                            <input type="radio" id="load-traintype" name="train-type" value="load">
+                            <label for="load-traintype" t="load"></label>
+                            <!-- <input type="radio" id="auto-traintype" name="train-type" value="auto" checked>
+                            <label for="auto-traintype" t="auto"></label> -->
+                            <input type="radio" id="manual-traintype" name="train-type" value="manual" checked>
+                            <label for="manual-traintype" t="manual"></label>
+                            <label for="manual-train-epoches" t="manual-train-epoches"></label>
+                            <input type="number" id="manual-train-epoches" value=3 min="1" max="20">
+                        </div>
+                        <div class="nor-top_space" id="select-import-model-form">
+                            <table id="import-model-table" class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 100px"></th>
+                                        <th class="text-center" t="name"></th>
+                                        <th class="text-center" t="uploader"></th>
+                                        <th class="text-center" t="group"></th>
+                                        <th class="text-center" t="language" style="min-width: 100px"></th>
+                                        <th class="text-center" t="remark"></th>
+                                        <th class="text-center" t="date" style="min-width: 100px"></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="import-model-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                        <span id="train-epoches-warning"></span>
+                        <span style="display: none;" id="load-traintype-warning" t="load-traintype-warning"></span>
+                        <!-- 训练方式 end -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span id="import-status"></span>
+                    <!-- 底部按钮 start -->
+                    <button type="button" class="btn-theme_primary" id="readyTrain" t="train"></button>
+                    <button type="button" class="btn-theme_primary" id="select-import-model" t="import"></button>
+                    <button type="button" class="btn-theme_default" data-dismiss="modal" id="btnToggle_arrow"
+                        t="cancel"></button>
+                    <!-- 底部按钮 end -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="train-confirm-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trainConfirmDialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span x-title="trainFileHint">
+                            <span id="train-file-status"></span>
+                        </span>
+                    </h5>
+                    <span aria-hidden="true" class="close" data-dismiss="modal" aria-label="Close"><i
+                            class="fas fa-times"></i></span>
+                </div>
+                <div class="modal-body">
+                    <span t="gitIgnoreHint"></span>
+                    <div class="p-rel" id="train-file-search-bar"><input id="train-file-search" type="text"
+                            class="form-control"><span id="clear-train-file-search"
+                            class="glyphicon glyphicon-remove"></span></div>
+                    <div class="box-train-file-tree">
+                        <div id="train-file-tree"></div>
+                        <div id="file-upload-form" style="display: none;">
+                            <iframe id="frameUpload" src="./upload.html" frameborder="0"
+                                style="width: 100%;height: 250px;"></iframe>
+                            <!-- <a id="uploadCode" t="uploadCode" target="_blank"></a> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div style="display: flex;justify-content: space-between;width: calc(100% - .5rem);">
+                        <div id="train-file-tree-control" class="ie9-float-left">
+                            <label>
+                                <button class="btn-theme_primary" id="btnSelectAllFile" t="checkAll"
+                                    style="min-width: 82px;"></button>
+                                <button class="btn-theme_default" id="btnSelectNoneFile" t="clearAll"
+                                    style="min-width: 82px;"></button>
+                            </label>
+                        </div>
+                        <div class="ie9-float-right">
+                            <button type="button" class="btn-theme_primary" id="btn-train-confirm-dialog-done"
+                                t="train"></button>
+                            <button type="button" class="btn-theme_default" data-dismiss="modal"
+                                id="btn-train-confirm-dialog-cancel" t="cancel"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="filetree-confirm-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="fileTreeDialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div id="file-selector-tree"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSelectFolder" t="choose" class="btn-theme_primary"></button>
+                    <button id="btnSelectFolderCancel" class="btn-theme_default" t="cancel"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="train-log-dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trainLogDialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="modal-body-codebox">
+                        <pre id="train-log-content"></pre>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="trainLogDialogRefresh" class="btn-theme_default" t="refresh"></button>
+                    <button id="trainLogDialogClose" class="btn-theme_default" t="close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹出层 start -->
+    <div class="alert-ui" style="display: none;">
+        <div class="alert-ui-content">
+            <div class="alert-ui-header">
+                <span class="alert-ui-title"></span>
+                <a href="javascript:;" class="alert-ui-close alert-ui-fn_close"></a>
+            </div>
+            <div class="alert-ui-main">
+                <p>content</p>
+            </div>
+            <div class="alert-ui-footer">
+                <a href="javascript:;" class="alert-ui-fn_close alert-ui-btn alert-ui-btn_primary" t="ok"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert-ui_dbtn">
+        <div class="alert-ui-content">
+            <div class="alert-ui-header">
+                <span class="alert-ui-title"></span>
+                <a href="javascript:;" class="alert-ui-close alert-ui-fn_close_dbtn"></a>
+            </div>
+            <div class="alert-ui-main">
+                <p>content</p>
+            </div>
+            <div class="alert-ui-footer">
+                <a href="javascript:;" class="alert-ui-btn alert-ui-btn_primary" id="alert-bt-now"
+                    style="margin-right: 8px;" t="byNow" id="byNow" target="_blank"></a>
+                <a href="javascript:;" class="alert-ui-fn_close_dbtn alert-ui-btn alert-ui-btn_default" t="cancel"></a>
+            </div>
+        </div>
+    </div>
+    <!-- 弹出层 end -->
+    <script src="commons.js"></script>
+    <script src="train.js"></script>
+</body>
+
+</html>

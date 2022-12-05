@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>aiXcoder</title>
+    <script>
+        const modernBrowser = 'fetch' in window && 'assign' in Object;
+
+        if (!modernBrowser) {
+            const scriptElement = document.createElement('script');
+
+            scriptElement.async = false;
+            scriptElement.src = '/polyfills.js';
+            document.head.appendChild(scriptElement);
+        }
+    </script>
+</head>
+
+<body>
+    <div id="container">
+        <div id="error0" class="error-msg" style="display: none;">
+            <h1 t="fileNotExist"></h1>
+            <span t="fileNotExistFix"></span>
+        </div>
+        <div id="error1" class="error-msg" style="display: none;">
+            <h1 t="fileHashMismatch"></h1>
+            <span t="fileHashMismatchFix"></span>
+        </div>
+        <div id="error2" class="error-msg" style="display: none;">
+            <h1 t="AVXNotSupported"></h1>
+            <span t="AVXNotSupportedFix"></span>
+        </div>
+        <div id="error3" class="error-msg" style="display: none;">
+            <h1 t="not64bit"></h1>
+            <span t="not64bitFix"></span>
+        </div>
+        <span id="detail"></span>
+    </div>
+    <script src="commons.js"></script>
+    <script src="error.js"></script>
+</body>
+
+</html>

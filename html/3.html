@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+    </ul>
+    <section>
+        <div>Item #1</div>
+        <div>Item #2</div>
+        <div>Item #3</div>
+      </section>
+      
+    <style>
+        section {
+  display: flex;
+  align-items: center;
+  height: 120px;
+  background: beige;
+}
+
+div {
+  height: 60px;
+  background: cyan;
+  margin: 5px;
+}
+
+div:nth-child(3) {
+  align-self:stretch;
+  background: pink;
+}
+
+        ul {
+          
+  display: flex;
+  align-items: center;
+  height: 120px;
+  background: beige;
+}
+
+li {float: left;
+  height: 60px;
+  background: cyan;
+  margin: 5px;
+}
+
+li:nth-child(3) {
+  align-self: flex-start;
+  background: pink;
+}
+
+    </style>
+</body>
+</html>

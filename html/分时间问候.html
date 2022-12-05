@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        
+        <div>上午好</div>
+        <div><img src="../static/2.bmp" alt=""></div>
+    </div>
+    <script>
+        var img = document.querySelector('img');  
+        var div = document.querySelector('div');
+        var date = new Date();
+        var h = date.getHours();
+        console.log(h);
+        if (h<0) {
+            img.src='../static/2.bmp';
+            div.innerHTML = '上午好'
+        }
+        else {
+            img.src='../static/3.bmp';
+            div.innerHTML='下午好'
+        }
+
+    </script>
+</body>
+</html>

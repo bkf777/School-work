@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="crypto-js/core.js"></script>
+    <script src="crypto-js/md5.js"></script>
+    <style>
+        html {
+            height: 100%;
+        }
+    </style>
+</head>
+<link rel="icon" type="image/ico" href="favicon-test.ico">
+
+<body style='display: -moz-box;display:flex;flex-direction:column;-ms-box-orient: horizontal;height: 100%;margin: 0;'>
+    <h1>AiXCoder test page</h1>
+    <div>
+        <input type="radio" name="lang" onchange="init_default()" value="java" checked> Java
+        <input type="radio" name="lang" onchange="init_default()" value="python"> Python
+        <input type="radio" name="lang" onchange="init_default()" value="javascript"> JavaScript
+        <input type="radio" name="lang" onchange="init_default()" value="typescript"> TypeScript
+        <input type="radio" name="lang" onchange="init_default()" value="cpp"> C++
+        <input type="radio" name="lang" onchange="init_default()" value="go"> Go
+        <input type="radio" name="lang" onchange="init_default()" value="csharp"> C#
+    </div>
+    <input id='remote' type='text' />
+    <div>
+    </div>
+    <textarea id='input' cols=10 rows=10>
+    </textarea>
+    <div>
+        <input name="follow-typing" type="checkbox" id="follow-typing" onclick="followTypingChange()" />
+        <label for="follow-typing">Follow Typing</label>
+        <button onclick='reset()'>Reset</button>
+    </div>
+    <textarea id='text-input' style="-moz-flex-grow: 1;flex-grow: 1;"></textarea>
+
+    <div style="padding: 2px 0;">
+        <button onclick='send()' style="min-width: 100px; color: blue;"><b>Predict</b></button>
+        <button onclick='use()'>Use Suggestion</button>
+        <button onclick='predictContinuous()'
+            style="min-width: 100px; color: rgb(94, 94, 94);"><b>Predict(continuous)</b></button>
+        <button onclick='predictContinuousStop()'
+            style="min-width: 100px; color: rgb(94, 94, 94);"><b>Predict(continuous stop)</b></button>
+        <button onclick='init()'>Init</button>
+        <button onclick='change()'>Change</button>
+        <button onclick='showCustomSend()'>More...</button>
+    </div>
+    <div id="custom-input-dialog"
+        style="position: fixed;display: none;z-index: 1;left: 0;top: 0;width: 100%;height: 100%;overflow: auto;background-color: rgb(0, 0, 0, 0.4);">
+        <div id="custom-input-dialog-content" style="background-color: #fefefe; margin: 15% auto;padding: 20px; border: 1px solid #888; width: 80%;">
+            <span id="close-button"
+                style="color: #aaa; float: right; font-weight: bold; cursor: pointer;">&times;</span>
+            <div style="display: flex;flex-direction: column;">
+                <div>
+                    <input type="radio" name="custom-input-type" onchange="init_custom_input()"
+                        value="static_data/addClass" checked> static_data/addClass
+                    <input type="radio" name="custom-input-type" onchange="init_custom_input()"
+                        value="static_data/addTypeDefinition"> static_data/addTypeDefinition
+                    <input type="radio" name="custom-input-type" onchange="init_custom_input()"
+                        value="static_data/addImportedClasses"> static_data/addImportedClasses
+                    <br>
+                    <input type="radio" name="custom-input-type" onchange="init_custom_input()"
+                        value="static_data/addClass:get"> static_data/addClass:get
+                    <input type="radio" name="custom-input-type" onchange="init_custom_input()"
+                        value="static_data/addTypeDefinition:get"> static_data/addTypeDefinition:get
+                    <input type="radio" name="custom-input-type" onchange="init_custom_input()"
+                        value="static_data/addImportedClasses:get"> static_data/addImportedClasses:get
+                </div>
+                <span id="custom-predict-url"></span>
+                <textarea id="custom-input-text" cols=10 rows=20></textarea>
+                <button onclick='send_custom_input()'>Send</button>
+            </div>
+        </div>
+    </div>
+    <textarea id='output' style="flex-grow: 1;"></textarea>
+    <script type="text/javascript">
+        /**
+         * http://stackoverflow.com/a/10997390/11236
+         */
+        function updateURLParameter(url, param, paramVal) {
+            var newAdditionalURL = "";
+            var tempArray = url.split("?");
+            var baseURL = tempArray[0];
+            var additionalURL = tempArray[1];
+            var temp = "";
+            if (additionalURL) {
+                tempArray = additionalURL.split("&");
+                for (var i = 0; i < tempArray.length; i++) {
+                    if (tempArray[i].split('=')[0] != param) {
+                        newAdditionalURL += temp + tempArray[i];
+                        temp = "&";
+                    }
+                }
+            }
+
+            var rows_txt = temp + "" + param + "=" + paramVal;
+            return baseURL + '?' + newAdditionalURL + rows_txt;
+        }
+
+        function readURLParameter(url, param) {
+            var newAdditionalURL = "";
+            var tempArray = url.split("?");
+            var baseURL = tempArray[0];
+            var additionalURL = tempArray[1];
+            var temp = "";
+            if (additionalURL) {
+                tempArray = additionalURL.split("&");
+                for (var i = 0; i < tempArray.length; i++) {
+                    if (tempArray[i].split('=')[0] == param) {
+                        return tempArray[i].split('=')[1];
+                    }
+                }
+            }
+            return null;
+        }
+
+        var socket = null;
+        var output = document.getElementById('output');
+        var remote = document.getElementById('remote');
+        remote.value = '//' + location.host;
+        var status_display = document.getElementById('status');
+        var input = document.getElementById('input');
+        var text_input = document.getElementById('text-input');
+        var uuid = null;
+        var lastResult = null;
+        var followTyping = document.getElementById("follow-typing");
+        followTyping.checked = readURLParameter(location.href, "followType") == "1";
+
+        function followTypingChange(e) {
+            var newUrl = updateURLParameter(location.href, "followType", followTyping.checked ? 1 : 0);
+            window.history.pushState(null, null, newUrl);
+        }
+
+        function saveLocalStorage(key, value) {
+            if (typeof (Storage) !== "undefined") {
+                localStorage.setItem(key, value);
+            } else {
+                // Sorry! No Web Storage support
+            }
+        }
+
+        var loadedFromLocalStorage1 = false;
+        var loadedFromLocalStorage2 = false;
+        function loadLocalStorage() {
+            if (typeof (Storage) !== "undefined") {
+                if (localStorage.getItem("input")) {
+                    input.value = localStorage.getItem("input");
+                    loadedFromLocalStorage1 = true;
+                }
+                if (localStorage.getItem("text_input")) {
+                    text_input.value = localStorage.getItem("text_input");
+                    loadedFromLocalStorage2 = true;
+                }
+            } else {
+                // Sorry! No Web Storage support
+            }
+        }
+        loadLocalStorage();
+
+        text_input.oninput = function (ev) {
+            saveLocalStorage("text_input", text_input.value);
+            if (followTyping.checked) {
+                send();
+            }
+        };
+
+        input.oninput = function () {
+            saveLocalStorage("input", input.value);
+        };
+
+        function render(tokens) {
+            var rendered = '';
+            var indent = '';
+            for (var j = 0; j < tokens.length; j++) {
+                var token = tokens[j];
+                if (rendered == '' && token != '<IND>' && token != '<UNIND>' && token != '<BREAK>') {
+                    rendered = indent;
+                }
+                if (token == '<BREAK>') {
+                    rendered += '∆';
+                } else if (token == '<ENTER>') {
+                    rendered += '\n';
+                } else if (token == '<IND>') {
+                    indent += '  ';
+                } else if (token == '<UNIND>') {
+                    if (indent.length >= 2) {
+                        indent = indent.substring(2);
+                    }
+                } else {
+                    rendered += token;
+                }
+                rendered += ' ';
+            }
+            return rendered;
+        }
+
+        function renderCut(cut) {
+            var tokens = cut.tokens;
+            var rendered = render(tokens);
+            var output = "\n>>>rendered:\n";
+            if (cut.current) {
+                output += '(' + cut.current + ')';
+            }
+            output += rendered;
+            if (cut.r_completion.length > 0) {
+                output += '⇢' + cut.r_completion.join(' ');
+            }
+            if (cut.err > 0) {
+                output += 'err: ' + cut.err;
+            }
+            return output;
+        }
+
+        function handle_response(data) {
+            if (data.err) {
+                return output.value += '\n' + JSON.stringify(data, null, 2);;
+            }
+            lastResult = data;
+            if (data.data) {
+                data = data.data;
+            }
+            if (data.length === 0) output.value += '\nNo candidates';
+            if (data[0].tokens) {
+                for (var i = 0; i < data.length; i++) {
+                    output.value += renderCut(data[i]);
+                }
+            }
+            if (data[0].sort) {
+                output.value += '\nSort: ' + JSON.stringify(data[0].sort, null, 2);
+            }
+            if (data[0].nosamode && data[0].nosamode.probsHistory) {
+                data[0].nosamode.probsHistory = "...";
+            }
+            output.value += '\n' + JSON.stringify(data, null, 2);
+        }
+
+        function serialize(obj) {
+            var str = [];
+            for (var p in obj)
+                if (obj.hasOwnProperty(p)) {
+                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                }
+            return str.join("&");
+        }
+
+        function md5(s) {
+            return CryptoJS.MD5(s).toString();
+        }
+
+        function reverseString(str) {
+            let newString = "";
+            for (let i = str.length - 1; i >= 0; i--) {
+                newString += str[i];
+            }
+            return newString;
+        }
+
+        let predict_continuous_id;
+
+        async function send(init_only, continuous) {
+            output.value = "";
+            var json = input.value;
+            var t = "";
+            var _s = new Date();
+            try {
+                json = JSON.parse(json);
+                var text = text_input.value
+                var sep = text.indexOf("<SEP>");
+                if (sep >= 0) {
+                    var lineEnd = text.indexOf("\n", sep);
+                    if (lineEnd === -1) {
+                        lineEnd = text.length;
+                    }
+                    json.remaining_text = text.substring(sep + 5, lineEnd);
+                    json.laterCode = text.substring(lineEnd);
+                    text = text.substring(0, sep);
+                }
+                json.text = text;
+                if (init_only) {
+                    json.init_only = true;
+                }
+
+                sep = text.indexOf("<LAST>");
+                if (sep >= 0) {
+                    json.offset = sep;
+                    output.value += '\noffset = ' + sep;
+                    text = json.text.substring(0, sep) + json.text.substring(sep + 6);
+                    json.md5 = md5(text);
+                    output.value += '\nmd5 = ' + json.md5;
+                    json.text = json.text.substring(sep + 6);
+                    output.value += '\ntext = ' + json.text;
+                    var laterCodeReversed = reverseString(json.laterCode || "");
+                    sep = laterCodeReversed.indexOf(reverseString("<LLAST>"));
+                    if (sep >= 0) {
+                        json.laterOffset = sep;
+                        output.value += '\nlaterOffset = ' + sep;
+                        json.laterMd5 = md5(laterCodeReversed);
+                        output.value += '\nlaterMd5 = ' + json.laterMd5;
+                        json.laterCode = reverseString(laterCodeReversed.substring(sep + 7));
+                        output.value += '\nlaterCode = ' + json.laterCode;
+                    }
+                }
+
+                if (continuous) {
+                    json.continuousPredict = "true";
+                    json.stop_timeLimit = "false";
+                    json.stop_stopProb = "false";
+                    json.stop_stopToken = "false";
+                    json.stop_tags = "false";
+                    json.saForceWait = "false";
+                    json.ngen = json.ngen || "100";
+                }
+
+                output.value += '\nmessage sent';
+                var res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: serialize(json)
+                });
+                t = await res.text();
+            } catch (e) {
+                output.value += '\n' + e;
+                return;
+            }
+            output.value += '🕑' + (new Date() - _s) + 'ms';
+            try {
+                t = JSON.parse(t);
+                handle_response(t);
+            } catch (e) {
+                console.log(e);
+                output.value += '\n' + e.toString();
+                output.value += '\n' + t;
+                return;
+            }
+            if (continuous) {
+                // const oldValue = output.value;
+                let id = t[0].id;
+                predict_continuous_id = id;
+                console.log("id = " + id);
+                let lastRendered;
+                let renderSameCount = 0;
+                while (true) {
+                    let response = await fetch('/predict_continuous', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }, body: serialize({
+                            uuid: "testpage",
+                            qid: id,
+                        })
+                    });
+                    response = await response.json();
+                    console.log(response);
+                    let rendered;
+                    if (response != null && response.cuts != null && response.cuts.length > 0) {
+                        const tokens = response.cuts[0];
+                        rendered = renderCut(tokens);
+                    } else {
+                        if (response && response.err) {
+                            output.value = "\nErr: " + JSON.stringify(response.err) + "\n" + output.value;
+                            break;
+                        } else {
+                            rendered = "\n>>>rendered: Empty\n";
+                        }
+                    }
+                    if (lastRendered === rendered) {
+                        renderSameCount++;
+                        if (renderSameCount > 50) {
+                            output.value = "Abort! Rendered result has been the same for the last 50 requests!\n" + output.value;
+                            break;
+                        }
+                    }
+                    lastRendered = rendered;
+                    output.value = '🕑' + (new Date() - _s) + 'ms: ' + rendered + "\n" + output.value;
+                    if (response != null && response.contPredEnded) {
+                        break;
+                    }
+                    await new Promise((resolve, reject) => { setTimeout(resolve, 50) });
+                }
+            }
+        }
+
+        async function init() {
+            await send(true);
+        }
+
+        async function predictContinuous() {
+            await send(false, true);
+        }
+
+        async function predictContinuousStop() {
+            let response = await fetch('/predict_continuous', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }, body: serialize({
+                    uuid: "testpage",
+                    qid: predict_continuous_id,
+                    action: "stop",
+                })
+            });
+            response = await response.json();
+            console.log(response);
+        }
+
+        async function change() {
+            output.value = "";
+            var json = input.value;
+            var t = "";
+            var _s = new Date();
+            try {
+                json = JSON.parse(json);
+                var text = text_input.value
+                var sep = text.indexOf("<SEP>");
+                if (sep >= 0) {
+                    var lineEnd = text.indexOf("\n", sep);
+                    if (lineEnd === -1) {
+                        lineEnd = text.length;
+                    }
+                    json.remaining_text = text.substring(sep + 5, lineEnd);
+                    json.laterCode = text.substring(lineEnd);
+                    text = text.substring(0, sep);
+                }
+                json.text = text;
+
+                sep = text.indexOf("<LAST>");
+                if (sep >= 0) {
+                    json.offset = sep;
+                    output.value += '\noffset = ' + sep;
+                    text = json.text.substring(0, sep) + json.text.substring(sep + 6);
+                    json.md5 = md5(text);
+                    output.value += '\nmd5 = ' + json.md5;
+                    json.text = json.text.substring(sep + 6);
+                    output.value += '\ntext = ' + json.text;
+                }
+
+                output.value += '\nmessage sent';
+                var res = await fetch('/changed', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: serialize(json)
+                });
+                t = await res.text();
+            } catch (e) {
+                output.value += '\n' + e;
+                return;
+            }
+            try {
+                t = JSON.parse(t);
+                output.value += '\n' + JSON.stringify(t, null, 2);;
+            } catch (e) {
+                console.log(e);
+                output.value += '\n' + JSON.stringify(e);
+            }
+            output.value += '\n🕑: ' + (new Date() - _s) + 'ms';
+        }
+
+        function use() {
+            if (lastResult != null && lastResult.length > 0) {
+                var rendered = render(lastResult[0].tokens);
+                text_input.value += rendered.replace(/∆/g, '')
+                    .replace(/<(int|long)>/g, '0')
+                    .replace(/<(double|float)>/g, '0')
+                    .replace(/<bool>/g, 'true')
+                    .replace(/<str>/g, '""');
+            }
+        }
+
+        function disconnect() {
+            socket.close();
+        }
+
+        async function init_default() {
+            var lang = document.querySelector('input[name="lang"]:checked').value;
+            const res = await fetch('/default_params?lang=' + lang, {
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            const init_params = await res.json();
+            if (!loadedFromLocalStorage2) {
+                text_input.value = init_params.text;
+            }
+            delete init_params.text;
+            if (!loadedFromLocalStorage1) {
+                input.value = JSON.stringify(init_params, null, 2);
+            }
+        }
+        init_default();
+
+        function reset() {
+            loadedFromLocalStorage2 = false;
+            loadedFromLocalStorage1 = false;
+            init_default();
+        }
+
+        input.addEventListener('paste', function () {
+            setTimeout(() => {
+                var fileidStart = input.value.indexOf('"fileid":') + '"fileid":'.length;
+                if (fileidStart === -1) {
+                    return;
+                }
+                fileidStart = input.value.indexOf('"', fileidStart);
+                var fileidEnd = input.value.indexOf('"', fileidStart + 1);
+                if (fileidEnd === -1) {
+                    return;
+                }
+                var beforeFileid = input.value.substring(0, fileidStart);
+                var fileid = input.value.substring(fileidStart, fileidEnd);
+                var afterFileid = input.value.substring(fileidEnd);
+                if (navigator.platform === "Win32") {
+                    var backslashPos = fileid.indexOf('\\');
+                    if (backslashPos !== -1 && fileid[backslashPos + 1] !== '\\') {
+                        input.value = beforeFileid + fileid.replace(/\\/g, '\\\\') + afterFileid;
+                    }
+                }
+                const p = JSON.parse(input.value);
+                if (p.text) {
+                    text_input.value = p.text;
+                    delete p.text;
+                }
+                p.saForceWait = true;
+                input.value = JSON.stringify(p, null, 2);
+            }, 100);
+        });
+
+        var customInputText = document.getElementById("custom-input-text");
+        function showCustomSend() {
+            setTimeout(showCustomInputDialog)
+        }
+        function suppressClick(e) {
+            e.stopPropagation();
+        }
+        var customInputDialog = document.getElementById("custom-input-dialog");
+        var customInputDialogContent = document.getElementById("custom-input-dialog-content");
+        function hideCustomInputDialog() {
+            customInputDialog.style.display = "none";
+            customInputDialog.removeEventListener("click", hideCustomInputDialog);
+            customInputDialogContent.removeEventListener("click", suppressClick);
+        }
+        function showCustomInputDialog() {
+            customInputDialog.addEventListener("click", hideCustomInputDialog);
+            customInputDialogContent.addEventListener("click", suppressClick);
+            customInputDialog.style.display = "block";
+            if (customInputText.value.length === 0) {
+                init_custom_input();
+            }
+        }
+        document.getElementById("close-button").addEventListener("click", function () {
+            hideCustomInputDialog();
+        });
+
+        var customInputTextCache = {};
+
+        function init_custom_input() {
+            var type = document.querySelector('input[name="custom-input-type"]:checked').value;
+            var url = document.getElementById("custom-predict-url");
+            if (type === "static_data/addClass") {
+                const i_json = JSON.parse(input.value);
+                const ext = i_json.ext;
+                const projectRoot = i_json.projectRoot;
+                customInputText.value = customInputTextCache[type] || JSON.stringify({
+                    "type": "static_data", "ext": ext, "projectRoot": projectRoot, "action": "addClass", "classInfos": [{
+                        "fullyQualifiedName": "com.nnthink.Apple", "visibility": "public", "members": [{ "isField": true, "name": "weight", "type": "int" }, { "isField": true, "name": "count", "type": "int" }, { "isField": false, "name": "setWeight", "type": "int", "parameters": ["int"] }]
+                    }, {
+                        "fullyQualifiedName": "com.nnthink.Peach", "visibility": "public", "members": []
+                    }]
+                }, null, 2);
+                url.text = "static_data";
+            } else if (type === "static_data/addTypeDefinition") {
+                const i_json = JSON.parse(input.value);
+                const ext = i_json.ext;
+                const projectRoot = i_json.projectRoot;
+                customInputText.value = customInputTextCache[type] || JSON.stringify({
+                    "type": "static_data", "ext": ext, "projectRoot": projectRoot, "action": "addTypeDefinition", variables: [
+                        { "fqName": "com.nnthink.Apple/int!setWeight#int/weight", "data_type": "int" },
+                        { "fqName": "com.nnthink.Apple/int!setWeight#int/a", "data_type": "com.nnthink.Apple" }
+                    ]
+                }, null, 2);
+                url.text = "static_data";
+            } else if (type === "static_data/addImportedClasses") {
+                const i_json = JSON.parse(input.value);
+                const ext = i_json.ext;
+                const projectRoot = i_json.projectRoot;
+                const filePath = i_json.fileid;
+                customInputText.value = customInputTextCache[type] || JSON.stringify({
+                    "type": "static_data", "ext": ext, "projectRoot": projectRoot, "action": "addImportedClasses", "filePath": filePath, "classes": [
+                        "com.nnthink.Peach"
+                    ]
+                }, null, 2);
+                url.text = "static_data";
+            } else if (type === "static_data/addClass:get") {
+                const i_json = JSON.parse(input.value);
+                const ext = i_json.ext;
+                const projectRoot = i_json.projectRoot;
+                customInputText.value = customInputTextCache[type] || JSON.stringify({
+                    "type": "static_data", "ext": ext, "projectRoot": projectRoot, "action": "addClass", "addClassAction": "get"
+                }, null, 2);
+                url.text = "static_data";
+            } else if (type === "static_data/addTypeDefinition:get") {
+                const i_json = JSON.parse(input.value);
+                const ext = i_json.ext;
+                const projectRoot = i_json.projectRoot;
+                customInputText.value = customInputTextCache[type] || JSON.stringify({
+                    "type": "static_data", "ext": ext, "projectRoot": projectRoot, "action": "addTypeDefinition", "addTypeDefinitionAction": "get"
+                }, null, 2);
+                url.text = "static_data";
+            } else if (type === "static_data/addImportedClasses:get") {
+                const i_json = JSON.parse(input.value);
+                const ext = i_json.ext;
+                const projectRoot = i_json.projectRoot;
+                const filePath = i_json.fileid;
+                customInputText.value = customInputTextCache[type] || JSON.stringify({
+                    "type": "static_data", "ext": ext, "projectRoot": projectRoot, "action": "addImportedClasses", "filePath": filePath, "addImportedClassesAction": "get"
+                }, null, 2);
+                url.text = "static_data";
+            }
+        }
+
+        customInputText.oninput = function (ev) {
+            var type = document.querySelector('input[name="custom-input-type"]:checked').value;
+            customInputTextCache[type] = customInputText.value;
+        };
+
+        async function send_custom_input() {
+            var url = document.getElementById("custom-predict-url");
+            var res = await fetch('/' + url.text, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: customInputText.value
+            });
+            const t = await res.text();
+            try {
+                var j = JSON.parse(t);
+                output.value = JSON.stringify(j, null, 2);
+            } catch(e) {
+                output.value = t;
+            }
+        }
+    </script>
+</body>
+
+</html>

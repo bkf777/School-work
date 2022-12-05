@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>aiXcoder</title>
+    <link rel="stylesheet" href="flag-icon-css-master/css/flag-icon.min.css">
+    <script>
+        var modernBrowser = 'fetch' in window && 'assign' in Object;
+
+        if (!modernBrowser) {
+            var scriptElement = document.createElement('script');
+
+            scriptElement.async = false;
+            scriptElement.src = '/polyfills.js';
+            document.head.appendChild(scriptElement);
+        }
+    </script>
+</head>
+
+<body class="flex flex-center flex-v-center">
+    <div class="main-container" style="width: 320px; height: 90%; margin-top: 20px;">
+        <!-- logo start -->
+        <div class="logo wrap" style="margin-bottom: 40px;"><a href="https://github.com/aixcoder-plugin/doc" target="_blank"><img src="./icon/logo.png" alt="aiXcoder" style="width: 200px;"></a></div>
+        <!-- logo end -->
+        <div id="contents">
+            <!-- <div><span id="status"></span></div> -->
+            <div class="page" id="page-home">
+                <!-- <div id="models">
+                    <table id="models-table" class="table table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col" t="model"></th>
+                                <th scope="col" t="expiry"></th>
+                                <th scope="col" t="action"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div> -->
+                <div id="enterpriseLogIn">
+                    <div class="enterpriseLogIn_tit"><span t="requires_login"></span></div>
+                    <div class="enterPrice_section">
+                        <label for="enterprise-username" t="username" class="enterPrise_label"></label>
+                        <input type="text" id="enterprise-username"  class="com-intext">
+                    </div>
+                    <div class="enterPrice_section enterPrice_section_spe">
+                        <label for="enterprise-password" t="password" class="enterPrise_label"></label>
+                        <input type="password" id="enterprise-password" class="com-intext">
+                    </div>
+                    <div class="enterPrice_section">
+                        <div class="enterPrice_tc">
+                            <button id="enterprise-login-btn" t="login" class="btn-theme_primary"></button>
+                        </div>
+                        <div class="enterPrice_tc enterPrice_lg_section">
+                            <a id="enterpriseAuthorizeEndpoint" target="_blank" href="" t="enterpriseAuthorizeEndpoint"></a>
+                        </div>
+                    </div>
+                </div>
+                <div id="enterpriseLoggedIn">
+                    <label for="enterprise-username-loggedin" t="logged_in_as"></label>
+                    <input type="text" id="enterprise-username-loggedin" disabled class="com-intext">
+                    <div class="enterPrice_tc enterPrice_lgd_section">
+                        <button id="enterprise-logout-btn" t="logout" class="btn-theme_primary"></button>
+                    </div>
+                    <div class="enterPrice_tc enterPrice_lg_section">
+                        <a id="enterpriseAuthorizeEndpoint1" target="_blank" href="" t="enterpriseAuthorizeEndpoint"></a>
+                    </div>
+                </div>
+               
+            </div>
+            <div class="page" id="page-settings" style="display: none;">
+                <!-- config port start -->
+                <div class="item-space flex between page-settings_section1">
+                    <label for="port-input" class="side-text" t="port"></label>
+                    <div class="main-area flex">
+                        <input id="port-input" class="com-intext" type="text" value="Loading..." />
+                    </div>
+                </div>
+                <!-- config port end -->
+                <!-- config language start -->
+                <div class="item-space flex between page-settings_section2">
+                    <label for="language-input" class="side-text" t="language"></label>
+                    <select id="language-input" class="selectpicker" data-width="fit">
+                        <option data-content='<span class="flag-icon flag-icon-us"></span> English' value="en">English</option>
+                        <option data-content='<span class="flag-icon flag-icon-cn"></span> 中文' value="zh">中文</option>
+                    </select>
+                </div>
+                <!-- config language end -->
+                <!-- config language start -->
+                <div class="item-space flex between page-settings_section3">
+                    <label for="trayicon-input" class="side-text" t="showTrayIcon"></label>
+                    <input id="trayicon-input" type="checkbox">
+                </div>
+                <!-- config language end -->
+                <button id="port-update" class="btn-theme_primary" t="save"></button>
+            </div>
+            <div class="page" style="display: none;">
+                <div>
+                    <!-- professional link start -->
+                    <div class="item-space text-right">
+                        <a href="https://aixcoder.com" target="_blank" class="link text-gray">Get Profession Edition</a>
+                    </div>
+                    <!-- professional link end -->
+                    <h2>Pending Files</h2>
+                    <span>These files are collected locally and waiting to be uploaded within the next hour.</span>
+                    <pre id="personal-model-pending-files"></pre>
+                </div>
+                <div>
+                    <h2>Personal Models</h2>
+                    <pre id="personal-model-info"></pre>
+                </div>
+                <div>
+                    <h2><label for="upload-file">Choose a source file to upload:</label></h2>
+                    <form method="POST" enctype="multipart/form-data" action="/upload">
+                        <input type="file" id="upload-file" name="upload-file" multiple
+                            accept=".java, .cpp, .c, .hpp, .h, .py, .js, .ts, .jsx, .tsx, .vue, .go, .php">
+                        <input type="submit" value="Upload" />
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="links">
+            <!-- Login -->
+            <!-- <div class="tab-link" id="login-container"><a id="login-link" href="#" target="_blank" t="login"></a></div> -->
+            <!-- Logout -->
+            <!-- <div class="tab-link" id="logout-container"><a id="logout-link" href="#" t="logout"></a></div> -->
+            <!-- Main -->
+            <div class="tab-link" id="home-container"><a href="#" t="enterpriseAccount"></a></div>
+            <!-- Self Train -->
+            <div class="tab-link" id="self-train-container" style="display: none;"><a target="_blank" href="/train.html" t="selfTrain"></a>
+            </div>
+            <!-- Adaptive -->
+            <div class="tab-link" id="adaptive" style="display: none;"><a href="/adaptive.html" t="configureAdaptive"></a>
+            </div>
+            <!-- Setting -->
+            <div class="tab-link" id="settings-container"><a href="#" t="settings"></a>
+            </div>
+            <!-- Code Search -->
+            <div class="tab-link" id="code-search-container"><a target="_blank" href="https://codesearch.aixcoder.com/"
+                    t="codeSearch"></a></div>
+            <!-- Change Log -->
+            <div class="tab-link" id="changelog"><a href="#"
+                    t-func="renderChangelogText"></a>
+            </div>
+            <!-- Support -->
+            <div class="tab-link" id="support-container"><a target="_blank" href="https://www.aixcoder.com/"
+                    t="support"></a>
+            </div>
+        </div>
+    </div>
+    <div class="alert-ui" style="display: none;">
+        <div class="alert-ui-content">
+            <div class="alert-ui-header">
+                <span class="alert-ui-title"></span>
+                <a href="javascript:;" class="alert-ui-close alert-ui-fn_close"></a>
+            </div>
+            <div class="alert-ui-main">
+                <p>content</p>
+            </div>
+            <div class="alert-ui-footer">
+                <a href="javascript:;" class="alert-ui-fn_close alert-ui-btn alert-ui-btn_primary" t="ok"></a>
+            </div>
+        </div>
+    </div>
+    <script src="commons.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript</title>
+    <style>
+        body{
+	background: #ccc;
+}
+        .error{
+            color: red;
+        }
+
+        
+        #view{
+            width: 600px;
+            background: #fff;
+            margin:0 auto;
+            margin-top: 100px;
+            box-shadow: 10px 10px 15px black;
+            text-align: center;
+            padding: 20px;
+            font-family:"微软雅黑 Light";
+        }
+        input{
+            width: 140px;
+            height: 20px;
+            margin:7px;
+        }
+        #submit{
+	margin-left: 80px;
+	color: white;
+	background:#2289F0; 
+	font-size: 18px;
+	font-weight: bold;
+	height: 40px;
+	border: none;font-family:"微软雅黑 Light";
+}
+
+#reset{
+	color: white;
+	background:#2289F0; 
+	font-size: 18px;
+	font-weight: bold;
+	height: 40px;
+	border: none;font-family:"微软雅黑 Light";
+}
+button{
+	margin: 10px;
+	
+}
+
+button#submit:hover{background:#0068D0;}
+button#reset:hover{background:#0068D0;}
+    </style>
+</head>
+<body>
+    <DIV id="view">
+        <h1>用户注册页面</h1>
+		<hr>
+    <form onsubmit="return validateForm()" action="" method="post">
+            
+            <div class="row">
+                <label>用&ensp;户&ensp;名：</label>
+                <input type="text" name="name">
+                <span class="error" id="nameErr"></span>
+            </div>
+            <div class="row">
+                <label>密&emsp;&emsp;码：</label>
+                <input type="password" name="pwd">
+                <span class="error" id="pwdErr"></span>
+            </div>
+            <div class="row">
+                <label>确认密码：</label>
+                <input type="password" name="pwd1">
+                <span class="error" id="pwdErr"></span>
+            </div>
+            <div class="row">
+                <label>邮&emsp;&emsp;箱：</label>
+                <input type="text" name="email">
+                <span class="error" id="emailErr"></span>
+            </div>
+            <div class="row">
+                <label>手&ensp;机&ensp;号：</label>
+                <input type="text" name="mobile" maxlength="11">
+                <span class="error" id="mobileErr"></span>
+            </div>
+            <div class="row">
+                <label>身份证号：</label>
+                <input type="text" name="ids" maxlength="18">
+                <span class="error" id="idsErr"></span>
+            </div>
+            <div class="row">
+            <button id="submit" type="submit">注册</button>
+            <button id="submit" type="reset">重置</button>
+
+            
+            </div>
+
+    </form>
+    </DIV>
+    <script>
+        var captcha = getCaptcha(); // 生成验证码
+        // 清空 input 标签后的提示信息
+        var tags = document.getElementsByTagName('input');
+        for (var i = 0; i < tags.length; i++) {
+            tags[i].onchange = function(){
+                var idname = this.name + "Err";
+                document.getElementById(idname).innerHTML = '';
+            }
+        }
+        // 显示错误消息
+        function printError(elemId, hintMsg) {
+            document.getElementById(elemId).innerHTML = hintMsg;
+        }
+        // 验证表单数据
+        function validateForm() {
+            // 获取表单元素的值
+            var name = document.querySelector("input[name='name']").value;
+            var pwd = document.querySelector("input[name='pwd']").value;
+            var email = document.querySelector("input[name='email']").value;
+            var mobile = document.querySelector("input[name='mobile']").value;
+            var captcha = document.querySelector("input[name='captcha']").value;
+            
+            if(name == "" || name == null){
+                printError("nameErr", "用户名不能为空");
+                return false;
+            }
+            if(pwd == "" || pwd == null){
+                printError("pwdErr", "密码不能为空");
+                return false;
+            }
+            if(email == "" || email == null){
+                printError("emailErr", "邮箱不能为空");
+                return false;
+            }
+            if(mobile == "" || mobile == null){
+                printError("mobileErr", "手机号不能为空");
+                return false;
+            }
+            if(captcha == "" || captcha == null){
+                printError("captchaErr", "验证码不能为空");
+                return false;
+            }
+        }
+        // 获取验证码
+        function getCaptcha(){
+            var cap = Math.floor(Math.random()*10000).toString();
+            if(cap.length != 4) cap += "0";
+            captcha = cap;
+            document.getElementById("captcha").innerHTML = cap;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+<div id="account"> 
+    <input type="button" value="-" @click="sub">
+    <span v-text='message' v-model="message"></span>
+    <input type="button" value="+" @click="add">
+</div>
+
+<div id="wrap">
+    <img :src="imgArr[index]" alt="">
+    <input type="button" value="prev" @click="prev">
+    <input type="button" value="next" @click="next">
+
+
+</div>
+
+<script>
+var app= new Vue({
+    el: "#account",
+    data: {
+        message:1,
+        add:0
+    },
+    methods:{
+        sub:function(){
+            this.message--;
+            
+
+        },
+        add:function(){
+            this.message++;
+        }
+
+    }
+
+
+});
+
+
+var wrap= new Vue({
+    el: "#wrap",
+    data: {
+        imgArr:[
+            "../static/0.bmp",
+            "../static/1.bmp",  
+            "../static/2.bmp",
+            "../static/3.bmp",
+        ],
+        index:1,
+    }, 
+    methods: {
+        next:function(){
+            this.index++;
+    },
+        prev:function(){
+            this.index--;
+
+        }
+    }
+    
+})
+
+
+</script>
+
+</body>
+</html>

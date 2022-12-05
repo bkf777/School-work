@@ -1,0 +1,43 @@
+.ie9-float-right {
+    float: right;
+}
+
+.ie9-float-left {
+    float: left;
+}
+
+.ie9-box-center {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.ie9-clearfix:after,
+.modal-header:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.modal-title {
+    float: left !important;
+}
+
+.modal-title+.close {
+    float: right !important;
+}
+
+#tab_content1 {
+    text-align: center;
+}
+
+.form-control.ie9-float-right {
+    width: calc(100% - 200px);
+}
+
+.ie9-special-btn {
+    position: relative;
+}
+
+.ie9-browser_ipt {
+    width: calc(100% - 100px) !important;
+}

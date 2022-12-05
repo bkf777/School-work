@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>倒计时</title>
+<script type="text/javascript" src="../jquery-3.3.1.min.js"></script>
+<script src="../js/倒计时.js"></script>
+<script src="../js/随机点名.js"></script>
+<style type="text/css">
+ *{margin: 0;padding: 0;}
+    .box1,.box2{
+        font-size: 36px;
+        width: 1300px;
+        height: 180px;
+        margin: 100px auto;
+        background: #82d743;
+        line-height: 180px;
+        text-align: center;
+        color: #fff;
+    }
+    .box2{
+        display: none;
+    }
+    button{
+        height: 50px;
+        width: 100px;
+        margin-top: 20px;
+    }
+    #touxiang{
+        height: 500px;
+        width: 500px;
+        border-radius:250px;
+        background-color: #fff;
+    }
+    #ranwrap{
+        margin: 0 auto;
+        text-align: center;;
+    }.name{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    #name{
+        font-size: large;
+    }
+</style>  
+</head>
+<body>
+<div class="box1"><p>倒计时 :<span id="daojishi"></span></p></div>
+<div class="box2">活动结束</div>
+<br>
+<br>
+<br>
+<div id="ranwrap">
+    <div id="ranbox">
+        <img src="" alt="" id="touxiang">
+        <br>
+        <div id="name"></div>
+    </div>
+        
+        <button id="start">开始按钮</button>
+        <button id="stop">停止按钮</button>
+    
+</div>
+
+</body>
+</html>

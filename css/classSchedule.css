@@ -1,0 +1,42 @@
+tr td,th{
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    font-size: 1px;
+    /* border: 1px solid black; */
+    font-size: small;
+    text-align: left;
+    vertical-align: top;
+    word-break: break-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.content{
+    height: 20px;
+}
+th{
+    text-align: center;
+    height: 20px;
+    font-size: 1px;
+    padding: 15px;
+}
+.time{text-align: center;}
+td:not(.time):not(.no){color:white;}
+td:not(.time){border-radius: 5px;}
+.schedule{
+    height: 200px;
+    width: 300px;
+    table-layout: fixed;
+    /* border-collapse: collapse; */
+}
+.no{
+    background-color:whitesmoke;
+    color:gray;
+    font-size: smaller;
+}
+.time{width: 12px;}
+.hadoop{background-color:aquamarine}
+.ai{background-color:chartreuse}
+.mg{background-color:coral}
+.web{background-color:darkcyan}
+.ass{background-color:hotpink}

@@ -1,0 +1,40 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+a { text-decoration: none; }
+#navi{
+    
+    margin-top: 200px;
+    height: 100px;
+    width: 100%;
+    position: fixed;
+    border: 2px solid;
+    
+}
+li.nav-li  {
+    list-style: none;
+	float: left;
+	margin-top: 35px;
+	margin-left: 80px;
+}
+
+li.nav-li a {
+	
+	color: #000033;
+	font-size: 20px;
+
+}
+
+li.nav-li a:hover{
+	color: #dd140f;
+
+}
+#header{
+    height: 200px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    border: 2px solid yellow;;
+
+}

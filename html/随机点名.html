@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style type="text/css">
+    #small{
+        border: 1px solid;
+        width: 90px;
+        height: 150px;
+    }
+    #img1{
+        width: 90px;
+        height: 150px;
+    }
+    #big{
+        border: 1px solid;
+        width: 270px;
+        height: 450px;
+    }
+    #img2{
+        width: 270px;
+        height: 450px;
+    }
+    #start{
+        width: 150px;
+        height: 100px;
+        font-size: 30px;
+    }
+    #stop{
+        width: 150px;
+        height: 100px;
+        font-size: 30px;
+    }
+</style>
+<body>
+		<!-- 小相框 -->
+		<div id="small">
+			<img id="img1" src="../static/logo_170x46.png">
+		</div>
+		<!-- 大相框 -->
+		<div id="big">
+			<img id="img2" src="../static/q (5).jpg">
+		</div>
+
+		<!-- 开始按钮 -->
+		<input id="start" type="button" value="点击开始">
+		<!-- 停止按钮 -->
+		<input id="stop" type="button" value="点击暂停">
+</body>
+<script>
+$(function(){
+				//处理按钮点击前和点击后是否可用
+				$("#start").attr("disabled", false);
+				$("#stop").attr("disabled", true);
+		
+				var imgs = ["../static/q (5).jpg","../static/logo_170x46.png","../static/5.bmp"
+				];
+				var id; //接收定时器返回的id值
+				var index; //数组索引
+				$("#start").click(function() {
+					id = setInterval(function() {
+						//生成随机角标
+						index = Math.floor(Math.random() * 6);
+						
+						//获取相框的src属性
+						$("#img1").attr("src", imgs[index]);
+		
+						//处理按钮是否可用
+						$("#start").attr("disabled", true);
+						$("#stop").attr("disabled", false);
+		
+					}, 100);
+				})
+		
+				
+				$("#stop").click(function() {
+					clearInterval(id);
+					$("#img2").prop("src", imgs[index]);
+					//处理按钮是否可用
+					$("#start").prop("disabled", false);
+					$("#stop").prop("disabled", true);
+				});
+			})
+</script>
+</html>

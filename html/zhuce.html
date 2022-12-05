@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>注册</title>
+	<meta charset="utf-8">
+	<script src="../jquery-3.3.1.min.js"></script>
+    <script src="../js/zhuce.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/zhuce.css">
+</head>
+<body>
+
+	<div class="regwrap">
+		<h1>用户注册页面</h1>
+		<hr>
+		<form id="form">
+			<div class="form-control">
+				<label for="">
+					用&ensp;户&ensp;名：	
+					<input type="text" name="username" id="" placeholder="请输入用户名">
+				</label>
+				<span class="error" id="nameErr"></span>
+			</div>
+
+			<div class="form-control">
+				<label for="">
+					密&emsp;&emsp;码：	
+					<input type="password" name="password" id="psd" placeholder="请输入密码">
+				</label>
+				<span class="error" id="psd1Err">*</span>
+			</div>
+
+			<div class="form-control">
+				<label for="">
+					确认密码：	
+					<input type="password" name="psd" placeholder="请再次输入密码">
+				</label>
+				<span class="error" id="psd2Err">*</span>
+			</div>
+
+			<div class="form-control">
+				<label for="">
+					邮&emsp;&emsp;箱：	
+					<input type="text" name="email" placeholder="请输入邮箱">
+				</label>
+				<span class="error" id="emailErr"></span>	
+			</div>
+
+			<div class="form-control">
+				<label for="">	
+					身&ensp;份&ensp;证：	
+					<input type="text" name="identity" placeholder="请输入身份证">
+				</label>
+				<span class="error" id="identityErr"></span>
+			</div>
+
+			<div class="form-control">
+				<label for="">	
+					手机号码：	
+					<input type="text" name="mobile" placeholder="请输入手机号码">
+				</label>
+				<span class="error" id="mobileErr"></span>
+			</div>
+
+
+			<button id="submit" type="submit" >提交</button>
+			<button id="reset" type="reset">重置</button>
+		</form>
+	</div>
+</body>
+</html>

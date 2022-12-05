@@ -1,0 +1,144 @@
+<html>
+
+<head>
+	<style>
+		html,
+		body {
+			height: 100%;
+		}
+
+		body {
+			margin: 0;
+			background: #f5f5f5;
+		}
+
+		.inner {
+			padding: 45px 40px 0px;
+			height: 100%;
+			box-sizing: border-box;
+		}
+
+		.title {
+			margin: 0;
+			line-height: 70px;
+			color: #666;
+			display: none;
+		}
+
+		.inner_bg {
+			background: #FFF;
+			padding: 30px 0;
+			text-align: center;
+			position: relative;
+		}
+
+		input[type="file"] {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 100;
+			opacity: 0;
+			left: -99999px\0;
+		}
+
+		.uploadFile {
+			text-align: center;
+		}
+
+		.btn_selectfile {
+			width: 220px;
+			height: 45px;
+			line-height: 45px;
+			display: inline-block;
+			color: #FFF;
+			background: #409eff;
+			text-align: center;
+			cursor: pointer;
+			border-radius: 4px;
+			transition: .1s;
+			position: relative;
+			z-index: 101;
+		}
+
+		.btn_selectfile:hover {
+			background: #66b1ff;
+		}
+
+		.btn-upload {
+			background: #1b98d0;
+			color: #FFF;
+			cursor: pointer;
+			border: none;
+			padding: 8px 20px;
+			border-radius: 2px;
+		}
+
+		.section_upload {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 20px;
+		}
+
+		#txt-filename {}
+	</style>
+	<script>
+		var modernBrowser = 'fetch' in window && 'assign' in Object;
+
+		if (!modernBrowser) {
+			var scriptElement = document.createElement('script');
+
+			scriptElement.async = false;
+			scriptElement.src = '/polyfills.js';
+			document.head.appendChild(scriptElement);
+		}
+	</script>
+</head>
+
+<body>
+	<div class="inner">
+		<p class="title">文件上传</p>
+		<form ref='uploadForm' id='uploadForm' action='/train/upload' method='post' encType="multipart/form-data">
+			<div class="inner_bg" id="inner_bg">
+				<label>
+					<input type="file" accept=".zip,.tar.gz" name="sampleFile" id="ipt_fileSelect" />
+					<span href="javascript:;" class="btn_selectfile" id="btn_selectfile">选择文件</span>
+				</label>
+			</div>
+			<div class="section_upload">
+				<span id="txt-filename"></span>
+				<input type='submit' value='Upload!' class="btn-upload" />
+			</div>
+		</form>
+	</div>
+
+	<script type="text/javascript">
+		// const url = new URL(window.location.href);
+		// const id = url.searchParams.get("id");
+		// const lang = url.searchParams.get("lang");
+
+		function getURLParameter(name) {
+		    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')).trim() || null;
+		}
+
+		const id = getURLParameter("id");
+		const lang = getURLParameter("lang");
+		document.getElementById("uploadForm").setAttribute("action", "/train/upload?id=" + id + "&lang=" + lang);
+		let btn_selectfile = document.getElementById("btn_selectfile");
+		btn_selectfile.ondragover = function() {
+			return false;
+		}
+		btn_selectfile.ondrop = function() {
+			return false;
+		}
+		document.getElementById("ipt_fileSelect").title = "";
+		document.getElementById("ipt_fileSelect").onchange = function(e) {
+			e = e || event;
+			document.getElementById("txt-filename").innerText = e.target.files[0].name;
+		}
+	</script>
+</body>
+
+</html>

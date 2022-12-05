@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/index1.css">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+    <div id="header" >
+        <div id="head" >
+        <div id="wrap">
+            <ul class="nav">
+                <li class="active" ><a href="#" class="nav-a">首页<span>HOME</span>
+            </li>
+                <li><a href="#" class="nav-a">历史发展<span>HISTROY</span></a></li>
+                <li><a href="# " class="nav-a">地道美食<span>FOOD</span></a></li>
+                <li><a href="#" class="nav-a">土特产商铺<span>STORE</span></a></li>
+                <li><a href="#" class="nav-a">传统文化<span>CULTURE</span></a></li>
+                <li><a href="#" class="nav-a">登录/注册<span>LOGIN</span></a></li>
+                <li><a href="#"></a></li>
+                <div class="nav-select">
+                    <div id="history" class="select">
+                        <ui>
+                        <li><a href="">发展变化</a></li>
+                        <li><a href="2">2</a></li>
+                        <li><a href="">3</a></li>
+                        </ui>
+                    </div>
+                    <div id="food" class="select">
+                        <ul>
+                        <li><a href="">1</a></li>
+                        <li><a href="">2</a></li>
+                        <li><a href="">3</a></li>
+                    </ul>
+                    </div>
+                    <div id="store" class="select">	
+                        <ul>
+                        <li><a href="">1</a></li>
+                        <li><a href="">1</a></li>
+                        <li><a href="">1</a></li>
+                        </ul>
+                    </div>
+                    <div id="cultrue" class="select">
+                        <ul>
+                        <li><a href="">传统文化</a></li>
+                        <li><a href="">文化背景</a></li>
+                        <li><a href="">1</a></li>
+                        </ul>
+                    </div>
+                    
+        <div>
+        
+        </div>			
+        </div>
+        
+            </ul>
+            <div id="h-right">
+                <ul>
+                    <li id="QRcode">
+                        <i class="ricon ricon0"></i>
+                        <div id="QR"><img src="../static/QR.jpg" alt=""><br>
+                            <span>扫描二维码打开掌上南宁</span>
+                        </div>
+    
+                    </li>
+                    <li>
+                        <a href="">
+                            <i class="ricon ricon1"></i>
+                        </a>
+                    </li>
+    
+                    <li>
+                        <a href="">
+                            <i class="ricon ricon2"></i>
+                        </a>
+                    </li>
+    
+                    <li>
+                        <a href="">
+                            <i class="ricon ricon3"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div></div>
+    </div>
+    <div id="a12">
+    <div id="p">
+        
+    <div id="ptitle">
+        <h1 style="text-align: center;">{{title}}</h1>
+        </div> 
+        <br>
+        <hr>
+        <div id="a13">
+        <span style="color:gray;">{{detail}}</span>
+        <br>
+        <br>
+        <br>
+        <div id="p1">
+                <img src="../static/c407a1fd-eb97-4622-8ca5-24d5609b1774.png" alt="" style="width:700px">
+                <p style="text-indent: 2em; margin-bottom: 15px;"><span style="text-indent: 2em;">村民们精心制作蚕丝被。</span></p>
+                <img src="../static/f5a53073-a095-467a-8da7-0f4648bda8d9.png" alt="" style="width: 700px;">
+                <p style="text-indent: 2em; margin-bottom: 15px;">那楼镇是南宁市重要的蚕桑产地之一。通过“党支部+合作社+基地+农户”模式，那楼镇打造三江桑蚕全产业链示范基地，引进南宁市齐兴桑蚕专业合作社，积极引导农民种桑养蚕，促进农业增效、农民增收。</p>
+                <p style="text-indent: 2em; margin-bottom: 15px;">“我们投资260万元对桑园进行改良改造和对大蚕房改建扩建，并购置丝绵、丝被加工设备，形成了桑树种植—原蚕育种—小蚕共育—大蚕养殖—蚕茧抽丝—蚕丝被制作和蚕沙—有机肥处理的全产业链生产示范基地。”该合作社社长淡有兴说。</p>
+        </div>
+
+        </div>
+        <div id="q0">
+            <input type="button" value="点赞" @click="add" id="add"><span id="q1">{{点赞数}}</span>
+        </div>
+    
+    </div>
+    <div id="picture">
+        <ul id="a14">
+            <li id="img1"><a href="">文字描述</a></li>
+            <li id="img2"><a href="">文字描述</a></li>
+            <li id="img3"><a href="">文字描述</a></li>
+        </ul>
+
+    </div>
+    </div>
+    <div id="foot">
+        <hr>
+        <div style="width: 100%;height: 400px;background:grey;">
+        
+        
+            <textarea placeholder="请发表评论..."></textarea>
+            <input type="button" value="发布" id="set">
+            <input type="button" value="清空" id="reset">
+            <ul id="comment"></ul>
+            <script>
+                var add1=document.getElementById("add");
+                add1.onclick = function() {
+                    
+                }
+                //1、获取元素
+                var reset=document.querySelector("#reset");
+                var txt = document.querySelector("textarea");
+                var btn = document.querySelector("#set");
+                var ul = document.querySelector("#comment");
+                //2、给button绑定点击事件
+                reset.onclick = function () {
+                    txt.value= ""}
+                btn.onclick = function () {
+                    if (txt.value == "") {//当文本框中没有文字时，提示
+                        alert("您没有输入内容")
+                    } else {
+                        //创建元素li作为留言区
+                        var li = document.createElement("li");
+                        //将文本框中的内容放到li中,a标签中href中的内容代表什么都不执行
+                        li.innerHTML = txt.value + "<br>"+"<a href='javascript:;'>删除</a>"
+                        txt.value = "";//添加之后文本框的内容清空
+                        //将留言添加到ul中，而且在最上方
+                        ul.insertBefore(li, ul.children[0]);
+                        //当点击删除时删除ul中的li
+                        var as = document.querySelectorAll("a");
+                        //循环给每个删除绑定事件
+                        for (var i = 0; i < as.length; i++) {
+                            as[i].onclick = function () {
+                                //删除当前a标签所在位置的父节点li
+                                ul.removeChild(this.parentNode);
+                            }
+                        }
+                    }
+                }
+            </script>
+            </div>
+
+    </div>
+<style>
+#picture a{
+display: inline-block;
+background: rgba(1,1,1, 0.3);
+text-align: center;
+width: 100%;
+margin-top: 279px;
+font-size: large;
+}
+#picture li{
+    display: block;
+    height: 300px;
+    width: 300px;
+}
+#a12{
+    display: flex;
+    justify-content:center;
+}
+#a13{
+    margin-left:15%;
+}
+#img1{
+    background: url("../static/5.bmp");
+    background-size:300px 300px;
+}
+#img2{
+    background: url("../static/青秀山.jpg");
+    background-size:300px 300px;
+
+
+}
+#img3{
+    background: url("../static/q\ \(3\).jpg");
+    background-size:300px 300px;
+
+
+}
+#p{
+    margin: right 30px; ;
+    width: 50%;
+    
+}
+#p1{
+    width: 700px;
+}
+#picture{
+    width: 20%;
+    
+}
+#p p{
+    font-size: 18px;
+    
+}
+</style>
+
+
+    <script>
+        var vue= new Vue({
+            el: "#p",
+            data: {
+                title: "“黄金茧”织就致富“新丝路”",
+                detail:"发布时间: 2022-12-02 |来源: 南宁日报 |作者： 综合 |责任编辑： 李鑫",
+                点赞数:0
+            },
+            methods: {
+                add:function() {
+                    this.点赞数++;
+                    
+
+                }
+            }
+        })
+    </script>
+    <style>
+        input[type="button"]{
+            width: 60px;
+            height: 30px;
+            
+        }
+        #q0{
+            text-align: center;
+        }
+        #q1{
+            
+        display: inline-block;
+        width: 30px;
+        border: 1px solid #000;
+        margin-left: 5px;
+        text-align: right;
+        }
+    
+        textarea {
+            width: 100%;
+            height: 100px;
+            border: 1px pink solid;
+            /* 不设置轮廓 */
+            outline: none;
+            /* 设置其不能改变长宽 */
+            resize: none;
+        }
+    
+        #foot li {
+            width: 100%;
+            padding: 5px;
+            background-color: #eee;
+            font-size: large;
+            margin: 15px 0;
+        }
+    
+        #foor li a {
+            text-align: right;
+            margin-left: 100px;
+        }
+    </style>
+    
+    
+</body>
+</html>
